@@ -1,46 +1,118 @@
 ﻿@{
-    ViewData["Title"] = "Система управления производством";
+    ViewData["Title"] = "Главная";
 }
 
-<div class="text-center mb-5">
-    <h1 class="display-4">Интерактивная система управления производством</h1>
-    <p class="lead">Автоматизация производственных процессов</p>
-</div>
+<div class="home-page text-white">
+    <div class="container" style="max-width: 1400px; margin: 0 auto;">
+        <div class="text-center mb-5">
+            <div class="mb-4">
+                <img src="~/images/factory_logo.png" 
+                     alt="Логотип" 
+                     height="120" 
+                     style="filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                <i class="bi bi-building-gear" 
+                   style="font-size: 120px; display: none; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5)); color: #3498db;"></i>
+            </div>
+            <h1 class="display-4 fw-bold">Интерактивная система управления производством</h1>
+            <p class="lead">Автоматизация производственных процессов на ASP.NET Core MVC</p>
+        </div>
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Материалы</h5>
-                <p class="card-text">Управление складскими запасами</p>
-                <a href="/Home/Materials" class="btn btn-light">Перейти</a>
+        <div class="row mt-5">
+            <div class="col-md-3 mb-4">
+                <div class="card bg-primary bg-opacity-75 text-white h-100 border-0 shadow">
+                    <div class="card-body text-center">
+                        <i class="bi bi-box-seam" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Материалы</h5>
+                        <p class="card-text">Управление складскими запасами и материалами</p>
+                        <a href="/Home/Materials" class="btn btn-light stretched-link">
+                            <i class="bi bi-arrow-right"></i> Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card bg-success bg-opacity-75 text-white h-100 border-0 shadow">
+                    <div class="card-body text-center">
+                        <i class="bi bi-hammer" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Продукты</h5>
+                        <p class="card-text">Каталог производимой продукции</p>
+                        <a href="/Home/Products" class="btn btn-light stretched-link">
+                            <i class="bi bi-arrow-right"></i> Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card bg-warning bg-opacity-75 text-dark h-100 border-0 shadow">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard-check" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Заказы</h5>
+                        <p class="card-text">Управление производственными заказами</p>
+                        <a href="/Home/Orders" class="btn btn-dark stretched-link">
+                            <i class="bi bi-arrow-right"></i> Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card bg-info bg-opacity-75 text-white h-100 border-0 shadow">
+                    <div class="card-body text-center">
+                        <i class="bi bi-gear" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Линии</h5>
+                        <p class="card-text">Интерактивная панель управления линиями</p>
+                        <a href="/Home/Lines" class="btn btn-light stretched-link">
+                            <i class="bi bi-arrow-right"></i> Перейти
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Продукты</h5>
-                <p class="card-text">Каталог производимой продукции</p>
-                <a href="/Home/Products" class="btn btn-light">Перейти</a>
+
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark bg-opacity-50 text-white border-0">
+                    <div class="card-body">
+                        <h5><i class="bi bi-graph-up"></i> Мониторинг</h5>
+                        <p>Отслеживание производства в реальном времени</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Прогресс заказов</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Статус линий</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Наличие материалов</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Заказы</h5>
-                <p class="card-text">Управление производственными заказами</p>
-                <a href="/Home/Orders" class="btn btn-light">Перейти</a>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark bg-opacity-50 text-white border-0">
+                    <div class="card-body">
+                        <h5><i class="bi bi-robot"></i> Автоматизация</h5>
+                        <p>Автоматические расчеты и обновления</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Расчет времени производства</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Контроль материалов</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Автообновление прогресса</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Линии</h5>
-                <p class="card-text">Интерактивная панель линий</p>
-                <a href="/Home/Lines" class="btn btn-light">Перейти</a>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark bg-opacity-50 text-white border-0">
+                    <div class="card-body">
+                        <h5><i class="bi bi-sliders"></i> Управление</h5>
+                        <p>Полный контроль производства</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Назначение заказов</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Пауза/возобновление</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Эффективность линий</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

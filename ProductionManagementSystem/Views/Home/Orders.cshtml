@@ -3,7 +3,7 @@
     ViewData["Title"] = "Производственные заказы";
 }
 
-<h2>Производственные заказы</h2>
+<h2 class="mb-4"><i class="bi bi-clipboard-check"></i> Производственные заказы</h2>
 
 <div class="alert alert-info">
     <i class="bi bi-info-circle"></i> 
@@ -18,11 +18,21 @@
     </div>
     <div>
         <div class="btn-group" role="group">
-            <button class="btn btn-outline-secondary filter-btn active" data-filter="all">Все</button>
-            <button class="btn btn-outline-warning filter-btn" data-filter="Pending">Ожидают</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="InProgress">В работе</button>
-            <button class="btn btn-outline-info filter-btn" data-filter="Paused">На паузе</button>
-            <button class="btn btn-outline-success filter-btn" data-filter="Completed">Завершены</button>
+            <button class="btn btn-outline-secondary filter-btn active" data-filter="all">
+                <i class="bi bi-list"></i> Все
+            </button>
+            <button class="btn btn-outline-warning filter-btn" data-filter="Pending">
+                <i class="bi bi-clock"></i> Ожидают
+            </button>
+            <button class="btn btn-outline-primary filter-btn" data-filter="InProgress">
+                <i class="bi bi-play-fill"></i> В работе
+            </button>
+            <button class="btn btn-outline-info filter-btn" data-filter="Paused">
+                <i class="bi bi-pause-fill"></i> На паузе
+            </button>
+            <button class="btn btn-outline-success filter-btn" data-filter="Completed">
+                <i class="bi bi-check-circle"></i> Завершены
+            </button>
         </div>
     </div>
 </div>
@@ -59,6 +69,15 @@
                                 "Cancelled" => "bg-secondary",
                                 _ => "bg-light text-dark"
                             };
+                            string statusIcon = order.Status switch
+                            {
+                                "Pending" => "bi-clock",
+                                "InProgress" => "bi-play-fill",
+                                "Paused" => "bi-pause-fill",
+                                "Completed" => "bi-check-circle",
+                                "Cancelled" => "bi-x-circle",
+                                _ => "bi-question-circle"
+                            };
                             string statusText = order.Status switch
                             {
                                 "Pending" => "Ожидает",
@@ -69,7 +88,9 @@
                                 _ => order.Status
                             };
                         }
-                        <span class="badge @badgeClass status-badge">@statusText</span>
+                        <span class="badge @badgeClass status-badge">
+                            <i class="bi @statusIcon"></i> @statusText
+                        </span>
                     </td>
                     <td>
                         <div class="progress" style="height: 25px;">
@@ -87,20 +108,24 @@
                     <td>
                         @if (order.ProductionLine != null)
                         {
-                            <span class="text-muted">@order.ProductionLine.Name</span>
+                            <span class="text-muted">
+                                <i class="bi bi-gear"></i> @order.ProductionLine.Name
+                            </span>
                         }
                         else
                         {
-                            <span class="text-muted">Не назначена</span>
+                            <span class="text-muted">
+                                <i class="bi bi-question-circle"></i> Не назначена
+                            </span>
                         }
                     </td>
                     <td>
                         <small>
-                            @order.EstimatedEndDate.ToString("dd.MM.yyyy HH:mm")
+                            <i class="bi bi-calendar-check"></i> @order.EstimatedEndDate.ToString("dd.MM.yyyy HH:mm")
                         </small>
                         @if (order.Status == "InProgress" && order.EstimatedEndDate < DateTime.Now)
                         {
-                            <br/><span class="badge bg-danger">Просрочен</span>
+                            <br/><span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Просрочен</span>
                         }
                     </td>
                     <td>
@@ -108,32 +133,32 @@
                             @if (order.Status == "Pending")
                             {
                                 <button class="btn btn-success start-order-btn" data-order-id="@order.Id" title="Запустить в производство">
-                                    ▶ Запустить
+                                    <i class="bi bi-play-fill"></i> Запустить
                                 </button>
                                 <button class="btn btn-danger cancel-order-btn" data-order-id="@order.Id" title="Отменить заказ">
-                                    ✕ Отменить
+                                    <i class="bi bi-x-circle"></i> Отменить
                                 </button>
                             }
                             else if (order.Status == "InProgress")
                             {
                                 <button class="btn btn-warning pause-order-btn" data-order-id="@order.Id" title="Приостановить">
-                                    ⏸ Пауза
+                                    <i class="bi bi-pause-fill"></i> Пауза
                                 </button>
                                 <button class="btn btn-danger cancel-order-btn" data-order-id="@order.Id" title="Отменить заказ">
-                                    ✕ Отменить
+                                    <i class="bi bi-x-circle"></i> Отменить
                                 </button>
                             }
                             else if (order.Status == "Paused")
                             {
                                 <button class="btn btn-success resume-order-btn" data-order-id="@order.Id" title="Возобновить">
-                                    ▶ Возобновить
+                                    <i class="bi bi-play-fill"></i> Возобновить
                                 </button>
                                 <button class="btn btn-danger cancel-order-btn" data-order-id="@order.Id" title="Отменить заказ">
-                                    ✕ Отменить
+                                    <i class="bi bi-x-circle"></i> Отменить
                                 </button>
                             }
                             <button class="btn btn-info details-order-btn" data-order-id="@order.Id" title="Подробнее">
-                                ℹ
+                                <i class="bi bi-info-circle"></i>
                             </button>
                         </div>
                     </td>
@@ -148,20 +173,22 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Создать новый производственный заказ</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle"></i> Создать новый производственный заказ
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="createOrderForm">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="productSelect" class="form-label">Продукт *</label>
+                            <label for="productSelect" class="form-label">Продукт <span class="text-danger">*</span></label>
                             <select class="form-select" id="productSelect" required>
                                 <option value="">Выберите продукт...</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="quantityInput" class="form-label">Количество *</label>
+                            <label for="quantityInput" class="form-label">Количество <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="quantityInput" required min="1" value="1">
                         </div>
                         <div class="col-md-3">
@@ -174,7 +201,7 @@
                     
                     <div id="productInfo" style="display: none;">
                         <hr>
-                        <h6>Информация о продукте:</h6>
+                        <h6><i class="bi bi-info-circle"></i> Информация о продукте:</h6>
                         <div class="row">
                             <div class="col-md-4">
                                 <small class="text-muted">Время производства:</small><br>
@@ -193,15 +220,17 @@
                     
                     <div id="materialCheck" style="display: none;">
                         <hr>
-                        <h6>Проверка материалов:</h6>
+                        <h6><i class="bi bi-box-seam"></i> Проверка материалов:</h6>
                         <div id="materialCheckResult"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Отмена
+                </button>
                 <button type="button" class="btn btn-primary" id="saveOrderBtn" disabled>
-                    Создать заказ
+                    <i class="bi bi-check-circle"></i> Создать заказ
                 </button>
             </div>
         </div>
@@ -213,16 +242,24 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Детали заказа #<span id="detailOrderId">-</span></h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-info-circle"></i> Детали заказа #<span id="detailOrderId">-</span>
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div id="orderDetailsContent">
-                    <p class="text-center">Загрузка...</p>
+                    <p class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                    </p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Закрыть
+                </button>
             </div>
         </div>
     </div>
@@ -252,20 +289,17 @@
                 const orders = await response.json();
                 
                 orders.forEach(order => {
-                    const row = document.querySelector(`tr[data-order-id="${order.id}"]`);
+                    const row = document.querySelector('tr[data-order-id="' + order.id + '"]');
                     if (!row) return;
                     
-                    // Обновляем атрибут статуса
                     row.setAttribute('data-status', order.status);
                     
-                    // Обновляем прогресс-бар
                     const progressBar = row.querySelector('.progress-bar');
                     if (progressBar) {
                         progressBar.style.width = order.progressPercent + '%';
                         progressBar.setAttribute('aria-valuenow', order.progressPercent);
                         progressBar.textContent = order.progressPercent + '%';
                         
-                        // Управление анимацией
                         if (order.status === 'InProgress') {
                             progressBar.classList.add('progress-bar-animated');
                             progressBar.classList.remove('bg-success');
@@ -277,29 +311,15 @@
                         }
                     }
                     
-                    // Обновляем статус
                     const statusCell = row.querySelector('td:nth-child(4) .badge');
                     if (statusCell) {
-                        statusCell.textContent = getStatusText(order.status);
+                        statusCell.innerHTML = '<i class="bi ' + getStatusIcon(order.status) + '"></i> ' + getStatusText(order.status);
                         statusCell.className = 'badge ' + getStatusBadgeClass(order.status);
                     }
                     
-                    // Обновляем кнопки действий
                     updateActionButtons(row, order);
-                    
-                    // Применяем фильтр
                     applyFilterToRow(row, currentFilter);
                 });
-
-                // Проверяем, не нужно ли удалить завершенные заказы из текущего фильтра
-                if (currentFilter !== 'all' && currentFilter !== 'Completed') {
-                    document.querySelectorAll('.order-row').forEach(row => {
-                        const status = row.getAttribute('data-status');
-                        if (status === 'Completed' && currentFilter !== 'Completed') {
-                            // Можно оставить или скрыть
-                        }
-                    });
-                }
             } catch (error) {
                 console.error('Error updating orders:', error);
             }
@@ -315,30 +335,30 @@
                 case 'Pending':
                     buttonsHtml = `
                         <button class="btn btn-success btn-sm start-order-btn" data-order-id="${order.id}" title="Запустить">
-                            ▶ Запустить
+                            <i class="bi bi-play-fill"></i> Запустить
                         </button>
                         <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="${order.id}" title="Отменить">
-                            ✕ Отменить
+                            <i class="bi bi-x-circle"></i> Отменить
                         </button>
                     `;
                     break;
                 case 'InProgress':
                     buttonsHtml = `
                         <button class="btn btn-warning btn-sm pause-order-btn" data-order-id="${order.id}" title="Пауза">
-                            ⏸ Пауза
+                            <i class="bi bi-pause-fill"></i> Пауза
                         </button>
                         <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="${order.id}" title="Отменить">
-                            ✕ Отменить
+                            <i class="bi bi-x-circle"></i> Отменить
                         </button>
                     `;
                     break;
                 case 'Paused':
                     buttonsHtml = `
                         <button class="btn btn-success btn-sm resume-order-btn" data-order-id="${order.id}" title="Возобновить">
-                            ▶ Возобновить
+                            <i class="bi bi-play-fill"></i> Возобновить
                         </button>
                         <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="${order.id}" title="Отменить">
-                            ✕ Отменить
+                            <i class="bi bi-x-circle"></i> Отменить
                         </button>
                     `;
                     break;
@@ -348,7 +368,7 @@
             
             buttonsHtml += `
                 <button class="btn btn-info btn-sm details-order-btn" data-order-id="${order.id}" title="Подробнее">
-                    ℹ
+                    <i class="bi bi-info-circle"></i>
                 </button>
             `;
             
@@ -367,6 +387,17 @@
             return statusMap[status] || status;
         }
 
+        function getStatusIcon(status) {
+            const iconMap = {
+                'Pending': 'bi-clock',
+                'InProgress': 'bi-play-fill',
+                'Paused': 'bi-pause-fill',
+                'Completed': 'bi-check-circle',
+                'Cancelled': 'bi-x-circle'
+            };
+            return iconMap[status] || 'bi-question-circle';
+        }
+
         function getStatusBadgeClass(status) {
             const classMap = {
                 'Pending': 'bg-warning text-dark',
@@ -381,7 +412,6 @@
         // ==================== ФИЛЬТРАЦИЯ ====================
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Обновляем активную кнопку
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
@@ -429,11 +459,11 @@
         }
 
         async function startOrder(e) {
-            const orderId = e.target.dataset.orderId;
+            const orderId = e.target.closest('button').dataset.orderId;
             if (!confirm('Запустить заказ в производство?')) return;
             
             try {
-                const response = await fetch(`/api/orders/${orderId}/start`, {
+                const response = await fetch('/api/orders/' + orderId + '/start', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -453,11 +483,11 @@
         }
 
         async function pauseOrder(e) {
-            const orderId = e.target.dataset.orderId;
+            const orderId = e.target.closest('button').dataset.orderId;
             if (!confirm('Поставить заказ на паузу? Производство остановится.')) return;
             
             try {
-                const response = await fetch(`/api/orders/${orderId}/pause`, {
+                const response = await fetch('/api/orders/' + orderId + '/pause', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -477,11 +507,11 @@
         }
 
         async function resumeOrder(e) {
-            const orderId = e.target.dataset.orderId;
+            const orderId = e.target.closest('button').dataset.orderId;
             if (!confirm('Возобновить производство?')) return;
             
             try {
-                const response = await fetch(`/api/orders/${orderId}/resume`, {
+                const response = await fetch('/api/orders/' + orderId + '/resume', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -501,11 +531,11 @@
         }
 
         async function cancelOrder(e) {
-            const orderId = e.target.dataset.orderId;
+            const orderId = e.target.closest('button').dataset.orderId;
             if (!confirm('Вы уверены, что хотите отменить заказ? Это действие нельзя отменить.')) return;
             
             try {
-                const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                const response = await fetch('/api/orders/' + orderId + '/cancel', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -525,10 +555,10 @@
         }
 
         async function showOrderDetails(e) {
-            const orderId = e.target.dataset.orderId;
+            const orderId = e.target.closest('button').dataset.orderId;
             
             try {
-                const response = await fetch(`/api/orders/${orderId}/details`);
+                const response = await fetch('/api/orders/' + orderId + '/details');
                 if (!response.ok) {
                     alert('Ошибка при загрузке деталей заказа');
                     return;
@@ -541,20 +571,20 @@
                 let html = `
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Продукт:</strong> ${order.productName}</p>
-                            <p><strong>Количество:</strong> ${order.quantity} шт.</p>
-                            <p><strong>Статус:</strong> <span class="badge ${getStatusBadgeClass(order.status)}">${getStatusText(order.status)}</span></p>
-                            <p><strong>Прогресс:</strong> ${order.progressPercent}%</p>
+                            <p><strong><i class="bi bi-hammer"></i> Продукт:</strong> ${order.productName}</p>
+                            <p><strong><i class="bi bi-stack"></i> Количество:</strong> ${order.quantity} шт.</p>
+                            <p><strong><i class="bi bi-flag"></i> Статус:</strong> <span class="badge ${getStatusBadgeClass(order.status)}"><i class="bi ${getStatusIcon(order.status)}"></i> ${getStatusText(order.status)}</span></p>
+                            <p><strong><i class="bi bi-graph-up"></i> Прогресс:</strong> ${order.progressPercent}%</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Дата начала:</strong> ${new Date(order.startDate).toLocaleString()}</p>
-                            <p><strong>Окончание:</strong> ${new Date(order.estimatedEndDate).toLocaleString()}</p>
-                            <p><strong>Линия:</strong> ${order.productionLineName || 'Не назначена'}</p>
-                            ${order.productionLineEfficiency ? `<p><strong>Эффективность:</strong> ${order.productionLineEfficiency}</p>` : ''}
+                            <p><strong><i class="bi bi-calendar"></i> Дата начала:</strong> ${new Date(order.startDate).toLocaleString()}</p>
+                            <p><strong><i class="bi bi-calendar-check"></i> Окончание:</strong> ${new Date(order.estimatedEndDate).toLocaleString()}</p>
+                            <p><strong><i class="bi bi-gear"></i> Линия:</strong> ${order.productionLineName || 'Не назначена'}</p>
+                            ${order.productionLineEfficiency ? `<p><strong><i class="bi bi-speedometer2"></i> Эффективность:</strong> ${order.productionLineEfficiency}</p>` : ''}
                         </div>
                     </div>
                     <hr>
-                    <h6>Необходимые материалы:</h6>
+                    <h6><i class="bi bi-box-seam"></i> Необходимые материалы:</h6>
                     <table class="table table-sm">
                         <thead>
                             <tr>
@@ -574,7 +604,7 @@
                             <td>${m.materialName}</td>
                             <td>${m.totalRequired} ${m.unit}</td>
                             <td>${m.availableQuantity} ${m.unit}</td>
-                            <td>${enough ? '✓ Достаточно' : '✗ Недостаточно'}</td>
+                            <td>${enough ? '<i class="bi bi-check-circle text-success"></i> Достаточно' : '<i class="bi bi-x-circle text-danger"></i> Недостаточно'}</td>
                         </tr>
                     `;
                 });
@@ -597,15 +627,12 @@
             await loadProducts();
             await loadAvailableLines();
             
-            // Привязываем события к существующим кнопкам
             document.querySelectorAll('.btn-group').forEach(group => {
                 attachButtonEvents(group);
             });
             
-            // Запускаем автообновление
             startAutoRefresh();
             
-            // Обработчики для формы создания заказа
             document.getElementById('productSelect').addEventListener('change', onProductChange);
             document.getElementById('quantityInput').addEventListener('input', onProductChange);
             document.getElementById('saveOrderBtn').addEventListener('click', createOrder);
@@ -626,7 +653,7 @@
                 products.forEach(product => {
                     const option = document.createElement('option');
                     option.value = product.id;
-                    option.textContent = `${product.name} (${product.productionTimePerUnit} мин/шт)`;
+                    option.textContent = product.name + ' (' + product.productionTimePerUnit + ' мин/шт)';
                     option.dataset.prodTime = product.productionTimePerUnit;
                     option.dataset.category = product.category || '';
                     select.appendChild(option);
@@ -646,7 +673,7 @@
                 lines.forEach(line => {
                     const option = document.createElement('option');
                     option.value = line.id;
-                    option.textContent = `${line.name} (КПД: ${line.efficiencyFactor})`;
+                    option.textContent = line.name + ' (КПД: ' + line.efficiencyFactor + ')';
                     select.appendChild(option);
                 });
             } catch (error) {
@@ -675,7 +702,7 @@
                 const endDate = new Date(Date.now() + totalMinutes * 60000);
                 
                 document.getElementById('infoProdTime').textContent = prodTime;
-                document.getElementById('infoTotalTime').textContent = `${hours} ч ${minutes} мин`;
+                document.getElementById('infoTotalTime').textContent = hours + ' ч ' + minutes + ' мин';
                 document.getElementById('infoEndDate').textContent = endDate.toLocaleString();
                 
                 checkMaterials(selectedOption.value, quantity);
@@ -688,17 +715,15 @@
 
         async function checkMaterials(productId, quantity) {
             try {
-                const response = await fetch(`/api/products/${productId}/materials`);
+                const response = await fetch('/api/products/' + productId + '/materials');
                 if (!response.ok) {
-                    document.getElementById('materialCheckResult').innerHTML = 
-                        '<div class="alert alert-warning">Нет данных о материалах</div>';
+                    document.getElementById('materialCheckResult').innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Нет данных о материалах</div>';
                     return;
                 }
                 
                 const materials = await response.json();
                 if (!materials.length) {
-                    document.getElementById('materialCheckResult').innerHTML = 
-                        '<div class="alert alert-info">Для этого продукта не указаны материалы</div>';
+                    document.getElementById('materialCheckResult').innerHTML = '<div class="alert alert-info"><i class="bi bi-info-circle"></i> Для этого продукта не указаны материалы</div>';
                     return;
                 }
                 
@@ -716,7 +741,7 @@
                             <strong>${m.name}</strong>: 
                             требуется ${totalNeeded} ${m.unitOfMeasure} 
                             (в наличии: ${available} ${m.unitOfMeasure})
-                            ${enough ? '✓' : '✗ НЕДОСТАТОЧНО!'}
+                            ${enough ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i> НЕДОСТАТОЧНО!'}
                         </li>
                     `;
                 });
@@ -724,18 +749,17 @@
                 html += '</ul>';
                 
                 if (!allAvailable) {
-                    html += '<div class="alert alert-danger mt-2">Недостаточно материалов для выполнения заказа!</div>';
+                    html += '<div class="alert alert-danger mt-2"><i class="bi bi-exclamation-circle"></i> Недостаточно материалов для выполнения заказа!</div>';
                     document.getElementById('saveOrderBtn').disabled = true;
                 } else {
-                    html += '<div class="alert alert-success mt-2">✓ Все материалы в наличии</div>';
+                    html += '<div class="alert alert-success mt-2"><i class="bi bi-check-circle"></i> Все материалы в наличии</div>';
                     document.getElementById('saveOrderBtn').disabled = false;
                 }
                 
                 document.getElementById('materialCheckResult').innerHTML = html;
             } catch (error) {
                 console.error('Error checking materials:', error);
-                document.getElementById('materialCheckResult').innerHTML = 
-                    '<div class="alert alert-danger">Ошибка при проверке материалов</div>';
+                document.getElementById('materialCheckResult').innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Ошибка при проверке материалов</div>';
             }
         }
 
@@ -764,15 +788,10 @@
                 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(`Заказ #${result.id} создан успешно!`);
+                    alert('Заказ #' + result.id + ' создан успешно!');
                     
-                    // Закрываем модальное окно
                     bootstrap.Modal.getInstance(document.getElementById('createOrderModal')).hide();
-                    
-                    // Обновляем список
                     await updateOrdersProgress();
-                    
-                    // Перезагружаем страницу чтобы показать новый заказ
                     setTimeout(() => location.reload(), 500);
                 } else {
                     const error = await response.json();

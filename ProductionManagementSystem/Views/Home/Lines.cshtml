@@ -3,14 +3,7 @@
     ViewData["Title"] = "Интерактивная панель линий";
 }
 
-<h2>Интерактивная панель производственных линий</h2>
-
-<div class="alert alert-info">
-    <i class="bi bi-info-circle"></i> 
-    Производство продолжается автоматически. Прогресс обновляется сервером в реальном времени.
-    Страница автоматически обновляет данные каждые 2 секунды.
-</div>
-
+<h2 class="mb-4"><i class="bi bi-gear"></i> Интерактивная панель производственных линий</h2>
 <div class="row" id="linesContainer">
     @foreach (var line in Model)
     {
@@ -19,12 +12,13 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@line.Name</h5>
                     <span class="badge @(line.Status == "Active" ? "bg-success" : "bg-danger") status-badge">
+                        <i class="bi @(line.Status == "Active" ? "bi-play-fill" : "bi-stop-fill")"></i>
                         @(line.Status == "Active" ? "Работает" : "Остановлена")
                     </span>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <strong>Коэффициент эффективности:</strong> 
+                        <strong><i class="bi bi-speedometer2"></i> Коэффициент эффективности:</strong> 
                         <span class="efficiency-value">@line.EfficiencyFactor.ToString("F1")</span>
                         <div class="mt-2">
                             <input type="range" class="form-range efficiency-slider" 
@@ -44,14 +38,21 @@
                         <div class="alert alert-info mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong>Текущий заказ:</strong> #@line.CurrentWorkOrder.Id<br>
-                                    <strong>Продукт:</strong> @line.CurrentWorkOrder.Product?.Name<br>
-                                    <strong>Кол-во:</strong> @line.CurrentWorkOrder.Quantity шт.<br>
-                                    <strong>Статус:</strong> @line.CurrentWorkOrder.Status
+                                    <strong><i class="bi bi-clipboard-check"></i> Текущий заказ:</strong> #@line.CurrentWorkOrder.Id<br>
+                                    <strong><i class="bi bi-hammer"></i> Продукт:</strong> @line.CurrentWorkOrder.Product?.Name<br>
+                                    <strong><i class="bi bi-stack"></i> Кол-во:</strong> @line.CurrentWorkOrder.Quantity шт.<br>
+                                    <strong><i class="bi bi-flag"></i> Статус:</strong> @line.CurrentWorkOrder.Status
                                 </div>
                                 <div>
                                     <span class="badge @(line.CurrentWorkOrder.Status == "Paused" ? "bg-warning" : "bg-info")">
-                                        @(line.CurrentWorkOrder.Status == "Paused" ? "На паузе" : "В работе")
+                                        @if (line.CurrentWorkOrder.Status == "Paused")
+                                        {
+                                            <i class="bi bi-pause-fill"></i> @:На паузе
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-play-fill"></i> @:В работе
+                                        }
                                     </span>
                                 </div>
                             </div>
@@ -73,21 +74,21 @@
                             {
                                 <button class="btn btn-success flex-grow-1 resume-order-btn" 
                                         data-order-id="@line.CurrentWorkOrder.Id">
-                                    ▶ Возобновить заказ
+                                    <i class="bi bi-play-fill"></i> Возобновить заказ
                                 </button>
                             }
                             else if (line.CurrentWorkOrder.Status == "InProgress")
                             {
                                 <button class="btn btn-warning flex-grow-1 pause-order-btn" 
                                         data-order-id="@line.CurrentWorkOrder.Id">
-                                    ⏸ Поставить на паузу
+                                    <i class="bi bi-pause-fill"></i> Поставить на паузу
                                 </button>
                             }
                             <button class="btn btn-outline-danger remove-order-btn" 
                                     data-order-id="@line.CurrentWorkOrder.Id"
                                     data-line-id="@line.Id"
                                     title="Убрать заказ с линии">
-                                ✕ Убрать заказ
+                                <i class="bi bi-x-circle"></i> Убрать заказ
                             </button>
                         </div>
                     }
@@ -104,7 +105,7 @@
                                 <button class="btn btn-primary w-100 assign-order-btn" 
                                         data-line-id="@line.Id"
                                         data-line-name="@line.Name">
-                                    📋 Назначить заказ на линию
+                                    <i class="bi bi-clipboard-plus"></i> Назначить заказ на линию
                                 </button>
                             </div>
                         }
@@ -114,13 +115,13 @@
                         @if (line.Status == "Active")
                         {
                             <button class="btn btn-outline-danger stop-line-btn" data-line-id="@line.Id">
-                                ⏹ Остановить линию
+                                <i class="bi bi-stop-fill"></i> Остановить линию
                             </button>
                         }
                         else
                         {
                             <button class="btn btn-outline-success start-line-btn" data-line-id="@line.Id">
-                                ▶ Запустить линию
+                                <i class="bi bi-play-fill"></i> Запустить линию
                             </button>
                         }
                     </div>
@@ -136,14 +137,17 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">
-                    Назначить заказ на линию: <span id="assignLineName">-</span>
+                    <i class="bi bi-clipboard-plus"></i> Назначить заказ на линию: <span id="assignLineName">-</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="orderSearchInput" 
-                           placeholder="Поиск заказа по номеру или продукту...">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="orderSearchInput" 
+                               placeholder="Поиск заказа по номеру или продукту...">
+                    </div>
                 </div>
                 
                 <div id="availableOrdersList">
@@ -155,7 +159,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Отмена
+                </button>
             </div>
         </div>
     </div>
@@ -192,7 +198,7 @@
         }
 
         function updateLineProgress(lineId, progress, lineStatus, currentWorkOrderId) {
-            const card = document.getElementById(`line-${lineId}`);
+            const card = document.getElementById('line-' + lineId);
             if (!card) return;
             
             const progressBar = card.querySelector('.progress-bar');
@@ -201,7 +207,6 @@
                 progressBar.setAttribute('aria-valuenow', progress);
                 progressBar.textContent = progress + '%';
                 
-                // Управление анимацией
                 if (currentWorkOrderId) {
                     progressBar.classList.add('progress-bar-animated');
                 } else {
@@ -209,15 +214,14 @@
                 }
             }
             
-            // Обновляем статусную кнопку линии
             const statusBadge = card.querySelector('.status-badge');
             if (statusBadge) {
                 if (lineStatus === 'Active') {
                     statusBadge.className = 'badge bg-success status-badge';
-                    statusBadge.textContent = 'Работает';
+                    statusBadge.innerHTML = '<i class="bi bi-play-fill"></i> Работает';
                 } else {
                     statusBadge.className = 'badge bg-danger status-badge';
-                    statusBadge.textContent = 'Остановлена';
+                    statusBadge.innerHTML = '<i class="bi bi-stop-fill"></i> Остановлена';
                 }
             }
         }
@@ -242,33 +246,22 @@
 
         async function loadAvailableOrders() {
             const listContainer = document.getElementById('availableOrdersList');
-            listContainer.innerHTML = `
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Загрузка...</span>
-                    </div>
-                </div>
-            `;
+            listContainer.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>';
             
             try {
-                // Получаем заказы, которые можно назначить на линию:
-                // - статус: Pending (ожидают) или Paused (на паузе)
-                // - без назначенной линии (ProductionLineId == null)
                 const response = await fetch('/api/orders?status=Pending,Paused');
                 if (!response.ok) {
-                    listContainer.innerHTML = '<div class="alert alert-danger">Ошибка загрузки заказов</div>';
+                    listContainer.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Ошибка загрузки заказов</div>';
                     return;
                 }
                 
                 const allOrders = await response.json();
-                
-                // Фильтруем: только заказы без линии
                 availableOrders = allOrders.filter(order => order.productionLineId === null || order.productionLineId === undefined);
                 
                 renderOrdersList(availableOrders);
             } catch (error) {
                 console.error('Error loading orders:', error);
-                listContainer.innerHTML = '<div class="alert alert-danger">Ошибка загрузки заказов</div>';
+                listContainer.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Ошибка загрузки заказов</div>';
             }
         }
 
@@ -282,7 +275,7 @@
                         Нет доступных заказов для назначения. 
                         Все активные заказы уже распределены по линиям или завершены.
                         <br><br>
-                        <a href="/Home/Orders" class="btn btn-sm btn-primary">Создать новый заказ</a>
+                        <a href="/Home/Orders" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle"></i> Создать новый заказ</a>
                     </div>
                 `;
                 return;
@@ -292,8 +285,8 @@
             
             orders.forEach(order => {
                 const statusBadge = order.status === 'Pending' 
-                    ? '<span class="badge bg-warning text-dark">Ожидает</span>' 
-                    : '<span class="badge bg-info text-dark">На паузе</span>';
+                    ? '<span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Ожидает</span>' 
+                    : '<span class="badge bg-info text-dark"><i class="bi bi-pause-fill"></i> На паузе</span>';
                 
                 const startDate = new Date(order.startDate).toLocaleString();
                 const endDate = new Date(order.estimatedEndDate).toLocaleString();
@@ -304,17 +297,17 @@
                          onclick="selectOrderForLine(${order.id})">
                         <div class="d-flex w-100 justify-content-between align-items-center">
                             <div>
-                                <h6 class="mb-1">Заказ #${order.id} - ${order.productName}</h6>
+                                <h6 class="mb-1"><i class="bi bi-clipboard-check"></i> Заказ #${order.id} - ${order.productName}</h6>
                                 <small class="text-muted">
-                                    Количество: ${order.quantity} шт. | 
-                                    Прогресс: ${order.progressPercent}% |
-                                    Создан: ${startDate}
+                                    <i class="bi bi-stack"></i> Кол-во: ${order.quantity} шт. | 
+                                    <i class="bi bi-graph-up"></i> Прогресс: ${order.progressPercent}% |
+                                    <i class="bi bi-calendar"></i> Создан: ${startDate}
                                 </small>
                             </div>
                             <div class="text-end">
                                 ${statusBadge}
                                 <br>
-                                <small class="text-muted">до ${endDate}</small>
+                                <small class="text-muted"><i class="bi bi-calendar-check"></i> до ${endDate}</small>
                             </div>
                         </div>
                     </div>
@@ -322,14 +315,11 @@
             });
             
             html += '</div>';
-            
-            // Добавляем информацию о количестве
-            html += `<small class="text-muted mt-2">Найдено заказов: ${orders.length}</small>`;
+            html += '<small class="text-muted mt-2"><i class="bi bi-list"></i> Найдено заказов: ' + orders.length + '</small>';
             
             listContainer.innerHTML = html;
         }
 
-        // Поиск по заказам в модальном окне
         document.getElementById('orderSearchInput').addEventListener('input', function() {
             const searchText = this.value.toLowerCase();
             
@@ -347,11 +337,10 @@
         });
 
         async function selectOrderForLine(orderId) {
-            if (!confirm(`Назначить заказ #${orderId} на выбранную линию?`)) return;
+            if (!confirm('Назначить заказ #' + orderId + ' на выбранную линию?')) return;
             
             try {
-                // Используем endpoint changeline для переназначения
-                const response = await fetch(`/api/orders/${orderId}/changeline`, {
+                const response = await fetch('/api/orders/' + orderId + '/changeline', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ newLineId: parseInt(selectedLineId) })
@@ -359,14 +348,8 @@
                 
                 if (response.ok) {
                     const result = await response.json();
-                    
-                    // Закрываем модальное окно
                     bootstrap.Modal.getInstance(document.getElementById('assignOrderModal')).hide();
-                    
-                    // Показываем уведомление
-                    alert(result.message || `Заказ #${orderId} назначен на линию`);
-                    
-                    // Перезагружаем страницу
+                    alert(result.message || 'Заказ #' + orderId + ' назначен на линию');
                     location.reload();
                 } else {
                     const error = await response.json();
@@ -384,17 +367,16 @@
                 const orderId = this.dataset.orderId;
                 const lineId = this.dataset.lineId;
                 
-                if (!confirm(`Убрать заказ #${orderId} с линии? Заказ вернется в статус ожидания.`)) return;
+                if (!confirm('Убрать заказ #' + orderId + ' с линии? Заказ вернется в статус ожидания.')) return;
                 
                 try {
-                    // Создаем специальный endpoint или используем changeline с null
-                    const response = await fetch(`/api/orders/${orderId}/removeline`, {
+                    const response = await fetch('/api/orders/' + orderId + '/removeline', {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' }
                     });
                     
                     if (response.ok) {
-                        alert(`Заказ #${orderId} убран с линии`);
+                        alert('Заказ #' + orderId + ' убран с линии');
                         location.reload();
                     } else {
                         const error = await response.json();
@@ -414,7 +396,7 @@
                 const efficiency = parseFloat(this.value).toFixed(1);
                 
                 try {
-                    const response = await fetch(`/api/lines/${lineId}/efficiency`, {
+                    const response = await fetch('/api/lines/' + lineId + '/efficiency', {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ efficiencyFactor: parseFloat(efficiency) })
@@ -436,7 +418,7 @@
                 if (!confirm('Поставить заказ на паузу?')) return;
                 
                 try {
-                    const response = await fetch(`/api/orders/${orderId}/pause`, { method: 'PUT' });
+                    const response = await fetch('/api/orders/' + orderId + '/pause', { method: 'PUT' });
                     if (response.ok) {
                         location.reload();
                     } else {
@@ -455,7 +437,7 @@
                 if (!confirm('Возобновить производство?')) return;
                 
                 try {
-                    const response = await fetch(`/api/orders/${orderId}/resume`, { method: 'PUT' });
+                    const response = await fetch('/api/orders/' + orderId + '/resume', { method: 'PUT' });
                     if (response.ok) {
                         location.reload();
                     } else {
@@ -474,7 +456,7 @@
                 const lineId = this.dataset.lineId;
                 if (!confirm('Остановить линию?')) return;
                 
-                await fetch(`/api/lines/${lineId}/status`, {
+                await fetch('/api/lines/' + lineId + '/status', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'Stopped' })
@@ -487,7 +469,7 @@
             btn.addEventListener('click', async function() {
                 const lineId = this.dataset.lineId;
                 
-                await fetch(`/api/lines/${lineId}/status`, {
+                await fetch('/api/lines/' + lineId + '/status', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'Active' })

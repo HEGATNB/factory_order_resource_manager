@@ -3,7 +3,7 @@
     ViewData["Title"] = "Панель продуктов";
 }
 
-<h2>Панель продуктов</h2>
+<h2 class="mb-4"><i class="bi bi-hammer"></i> Панель продуктов</h2>
 
 <div class="row mb-3">
     <div class="col-md-4">
@@ -22,11 +22,14 @@
         </select>
     </div>
     <div class="col-md-4">
-        <input type="text" class="form-control" id="searchProduct" placeholder="Поиск продукта...">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="searchProduct" placeholder="Поиск продукта...">
+        </div>
     </div>
     <div class="col-md-4 text-end">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal" onclick="openAddProductModal()">
-            + Добавить продукт
+            <i class="bi bi-plus-circle"></i> Добавить продукт
         </button>
     </div>
 </div>
@@ -55,7 +58,7 @@
                         <button class="btn btn-sm btn-outline-info view-materials-btn" 
                                 data-product-id="@product.Id"
                                 data-product-name="@product.Name">
-                            📦 Материалы
+                            <i class="bi bi-box-seam"></i> Материалы
                         </button>
                     </td>
                     <td>
@@ -65,13 +68,15 @@
                                     data-product-name="@product.Name"
                                     data-product-time="@product.ProductionTimePerUnit"
                                     data-product-category="@product.Category"
-                                    data-product-minstock="@product.MinimalStock">
-                                ✏️
+                                    data-product-minstock="@product.MinimalStock"
+                                    title="Редактировать">
+                                <i class="bi bi-pencil"></i>
                             </button>
                             <button class="btn btn-outline-danger delete-product-btn" 
                                     data-product-id="@product.Id"
-                                    data-product-name="@product.Name">
-                                🗑️
+                                    data-product-name="@product.Name"
+                                    title="Удалить">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </div>
                     </td>
@@ -86,7 +91,9 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="productModalTitle">Добавить новый продукт</h5>
+                <h5 class="modal-title" id="productModalTitle">
+                    <i class="bi bi-plus-circle"></i> Добавить новый продукт
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -95,15 +102,15 @@
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="productName" class="form-label">Название продукта *</label>
+                            <label for="productName" class="form-label">Название продукта <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="productName" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="productTime" class="form-label">Время производства (мин/шт) *</label>
+                            <label for="productTime" class="form-label">Время производства (мин/шт) <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="productTime" required min="1" value="30">
                         </div>
                         <div class="col-md-3">
-                            <label for="productMinStock" class="form-label">Мин. запас *</label>
+                            <label for="productMinStock" class="form-label">Мин. запас <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="productMinStock" required min="0" value="10">
                         </div>
                     </div>
@@ -127,8 +134,9 @@
                     </div>
                     
                     <hr>
-                    <h5>Материалы для производства</h5>
+                    <h5><i class="bi bi-box-seam"></i> Материалы для производства</h5>
                     <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
                         <small>Выберите материалы, необходимые для производства одной единицы продукта</small>
                     </div>
                     
@@ -147,7 +155,7 @@
                         </div>
                         <div class="col-md-2">
                             <button type="button" class="btn btn-success w-100" id="addMaterialBtn">
-                                + Добавить
+                                <i class="bi bi-plus"></i> Добавить
                             </button>
                         </div>
                     </div>
@@ -165,7 +173,7 @@
                             <tbody>
                                 <tr id="noMaterialsRow">
                                     <td colspan="4" class="text-center text-muted">
-                                        Материалы не добавлены
+                                        <i class="bi bi-inbox"></i> Материалы не добавлены
                                     </td>
                                 </tr>
                             </tbody>
@@ -174,8 +182,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" id="saveProductBtn">Сохранить продукт</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Отмена
+                </button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">
+                    <i class="bi bi-check-circle"></i> Сохранить продукт
+                </button>
             </div>
         </div>
     </div>
@@ -186,16 +198,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Материалы: <span id="viewProductName"></span></h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-box-seam"></i> Материалы: <span id="viewProductName"></span>
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div id="viewMaterialsContent">
-                    <p class="text-center">Загрузка...</p>
+                    <p class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                    </p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Закрыть
+                </button>
             </div>
         </div>
     </div>
@@ -286,7 +306,7 @@
             const tbody = document.getElementById('productMaterialsTable').querySelector('tbody');
             
             if (selectedMaterials.length === 0) {
-                tbody.innerHTML = '<tr id="noMaterialsRow"><td colspan="4" class="text-center text-muted">Материалы не добавлены</td></tr>';
+                tbody.innerHTML = '<tr id="noMaterialsRow"><td colspan="4" class="text-center text-muted"><i class="bi bi-inbox"></i> Материалы не добавлены</td></tr>';
                 return;
             }
             
@@ -296,7 +316,7 @@
                 html += '<td>' + material.materialName + '</td>';
                 html += '<td>' + material.quantityNeeded + '</td>';
                 html += '<td>' + material.unitOfMeasure + '</td>';
-                html += '<td><button type="button" class="btn btn-sm btn-danger" onclick="removeMaterial(' + index + ')">✕</button></td>';
+                html += '<td><button type="button" class="btn btn-sm btn-danger" onclick="removeMaterial(' + index + ')"><i class="bi bi-trash"></i></button></td>';
                 html += '</tr>';
             });
             
@@ -312,7 +332,7 @@
         // ==================== ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ====================
         function openAddProductModal() {
             editingProductId = 0;
-            document.getElementById('productModalTitle').textContent = 'Добавить новый продукт';
+            document.getElementById('productModalTitle').innerHTML = '<i class="bi bi-plus-circle"></i> Добавить новый продукт';
             document.getElementById('productId').value = '0';
             document.getElementById('productName').value = '';
             document.getElementById('productTime').value = '30';
@@ -327,7 +347,7 @@
         document.querySelectorAll('.edit-product-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 editingProductId = parseInt(this.dataset.productId);
-                document.getElementById('productModalTitle').textContent = 'Редактировать продукт';
+                document.getElementById('productModalTitle').innerHTML = '<i class="bi bi-pencil"></i> Редактировать продукт';
                 document.getElementById('productId').value = editingProductId;
                 document.getElementById('productName').value = this.dataset.productName;
                 document.getElementById('productTime').value = this.dataset.productTime;
@@ -403,14 +423,12 @@
                 let response;
                 
                 if (editingProductId > 0) {
-                    // Обновление существующего продукта
                     response = await fetch('/api/products/' + editingProductId, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(productData)
                     });
                 } else {
-                    // Создание нового продукта
                     response = await fetch('/api/products', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -420,11 +438,7 @@
                 
                 if (response.ok) {
                     alert(editingProductId > 0 ? 'Продукт обновлен' : 'Продукт создан');
-                    
-                    // Закрываем модальное окно
                     bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
-                    
-                    // Перезагружаем страницу
                     location.reload();
                 } else {
                     const error = await response.json();
@@ -476,7 +490,7 @@
                 const productName = this.dataset.productName;
                 
                 document.getElementById('viewProductName').textContent = productName;
-                document.getElementById('viewMaterialsContent').innerHTML = '<p class="text-center">Загрузка...</p>';
+                document.getElementById('viewMaterialsContent').innerHTML = '<p class="text-center"><div class="spinner-border text-info" role="status"><span class="visually-hidden">Загрузка...</span></div></p>';
                 
                 new bootstrap.Modal(document.getElementById('viewMaterialsModal')).show();
                 
@@ -486,7 +500,7 @@
                         const materials = await response.json();
                         
                         if (materials.length === 0) {
-                            document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-warning">Для этого продукта не указаны материалы</div>';
+                            document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Для этого продукта не указаны материалы</div>';
                             return;
                         }
                         
@@ -499,11 +513,11 @@
                         html += '</tbody></table>';
                         document.getElementById('viewMaterialsContent').innerHTML = html;
                     } else {
-                        document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-danger">Ошибка загрузки материалов</div>';
+                        document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Ошибка загрузки материалов</div>';
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-danger">Ошибка загрузки материалов</div>';
+                    document.getElementById('viewMaterialsContent').innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Ошибка загрузки материалов</div>';
                 }
             });
         });
