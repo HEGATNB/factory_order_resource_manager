@@ -36,7 +36,7 @@ namespace ProductionManagementSystem.Controllers
                 status = l.Status,
                 efficiencyFactor = l.EfficiencyFactor,
                 currentWorkOrderId = l.CurrentWorkOrderId,
-                currentProduct = l.CurrentWorkOrder != null ? l.CurrentWorkOrder.Product.Name : null,
+                currentProduct = l.CurrentWorkOrder != null ? l.CurrentWorkOrder.Product != null ? l.CurrentWorkOrder.Product.Name : null : null,
                 currentProgress = l.CurrentWorkOrder != null ? l.CurrentWorkOrder.ProgressPercent : 0,
                 currentOrderStatus = l.CurrentWorkOrder != null ? l.CurrentWorkOrder.Status : null
             }).ToListAsync();

@@ -78,3 +78,4 @@ C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.pdb
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.genruntimeconfig.cache
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ref\ProductionManagementSystem.dll
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.sourcelink.json
