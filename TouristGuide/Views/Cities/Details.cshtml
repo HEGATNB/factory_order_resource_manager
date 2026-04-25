@@ -1,0 +1,98 @@
+@model TouristGuide.Models.City
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Города</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <h1>@Model.Name</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" class="img-fluid rounded detail-image" alt="@Model.Name" />
+            }
+            else
+            {
+                <div class="bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 300px;">
+                    <span class="text-white">Фото отсутствует</span>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h5 class="card-title">Информация</h5>
+                    <p><strong>Регион:</strong> @Model.Region</p>
+                    <p><strong>Население:</strong> @Model.Population.ToString("N0") человек</p>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.CoatOfArmsImageUrl))
+            {
+                <div class="card info-card mt-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Герб города</h5>
+                        <img src="@Model.CoatOfArmsImageUrl" class="img-fluid coat-of-arms" alt="Герб @Model.Name" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(Model.History))
+    {
+        <div class="card info-card">
+            <div class="card-body">
+                <h5 class="card-title">История</h5>
+                <p class="card-text">@Model.History</p>
+            </div>
+        </div>
+    }
+    
+    <h2>Достопримечательности</h2>
+    @if (Model.Attractions != null && Model.Attractions.Any())
+    {
+        <div class="row mt-3">
+            @foreach (var attraction in Model.Attractions)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(attraction.PhotoUrl))
+                        {
+                            <img src="@attraction.PhotoUrl" class="card-img-top" alt="@attraction.Name" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22200%22 height=%22200%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3EНет фото%3C/text%3E%3C/svg%3E'" />
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-white">Нет фото</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@attraction.Name</h5>
+                            <p class="card-text">
+                                @(attraction.History?.Length > 100 ? attraction.History.Substring(0, 100) + "..." : attraction.History)
+                            </p>
+                            <a href="@Url.Action("Details", "Attractions", new { id = attraction.Id })" 
+                               class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>В этом городе пока нет добавленных достопримечательностей.</p>
+        </div>
+    }
+</div>

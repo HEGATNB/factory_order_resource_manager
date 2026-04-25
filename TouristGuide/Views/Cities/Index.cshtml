@@ -1,0 +1,56 @@
+@model IEnumerable<TouristGuide.Models.City>
+
+@{
+    ViewData["Title"] = "Туристический путеводитель";
+}
+
+<div class="container">
+    <form asp-controller="Cities" asp-action="Index" method="get" class="search-form">
+        <div class="input-group mb-4">
+            <input type="text" class="form-control search-input" name="searchString" 
+                   placeholder="🔍 Поиск по названию города..." 
+                   value="@ViewData["CurrentFilter"]" />
+            <button class="btn btn-primary" type="submit">Поиск</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Сбросить</a>
+        </div>
+    </form>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4>Города не найдены</h4>
+            <p>Попробуйте изменить параметры поиска или добавьте новые города в базу данных.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var city in Model)
+            {
+                <div class="col-md-4 mb-4 city-card">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(city.PhotoUrl))
+                        {
+                            <img src="@city.PhotoUrl" class="card-img-top" alt="@city.Name" />
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-white">Нет фото</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@city.Name</h5>
+                            <p class="card-text">
+                                <strong>Регион:</strong> @city.Region<br />
+                                <strong>Население:</strong> @city.Population.ToString("N0") чел.
+                            </p>
+                            <a href="@Url.Action("Details", "Cities", new { id = city.Id })" 
+                               class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,59 @@
+@model TouristGuide.Models.Attraction
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Cities" asp-action="Index">Города</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Cities" asp-action="Details" asp-route-id="@Model.CityId">@Model.City?.Name</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <h1>@Model.Name</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" class="img-fluid rounded detail-image" alt="@Model.Name" 
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3EНет фото%3C/text%3E%3C/svg%3E'" />
+            }
+            else
+            {
+                <div class="bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 300px;">
+                    <span class="text-white">Фото отсутствует</span>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Информация</h5>
+                    <p class="text-dark"><strong>Город:</strong> @Model.City?.Name</p>
+                    @if (!string.IsNullOrEmpty(Model.WorkingHours))
+                    {
+                        <p class="text-dark"><strong>Часы работы:</strong> @Model.WorkingHours</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Cost))
+                    {
+                        <p class="text-dark"><strong>Стоимость:</strong> @Model.Cost</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(Model.History))
+    {
+        <div class="card info-card mt-4">
+            <div class="card-body">
+                <h5 class="card-title text-dark">История</h5>
+                <p class="card-text text-dark">@Model.History</p>
+            </div>
+        </div>
+    }
+</div>
