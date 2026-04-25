@@ -1,0 +1,194 @@
+@model IEnumerable<ProductionManagementSystem.Models.Product>
+@{
+    ViewData["Title"] = "Панель продуктов";
+}
+
+<h2>Панель продуктов</h2>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <select class="form-select" id="categoryFilter">
+            <option value="">Все категории</option>
+            @if (ViewBag.Categories != null)
+            {
+                foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input type="text" class="form-control" id="searchProduct" placeholder="Поиск продукта...">
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            Добавить продукт
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Время производства (мин/шт)</th>
+                <th>Категория</th>
+                <th>Мин. запас</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr data-category="@product.Category">
+                    <td>@product.Name</td>
+                    <td>@product.ProductionTimePerUnit</td>
+                    <td>@product.Category</td>
+                    <td>@product.MinimalStock</td>
+                    <td>
+                        <button class="btn btn-sm btn-info view-materials-btn" 
+                                data-product-id="@product.Id"
+                                data-product-name="@product.Name">
+                            Материалы
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно добавления продукта -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить новый продукт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label class="form-label">Название</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Время производства (мин/шт)</label>
+                        <input type="number" class="form-control" id="productTime" required min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Категория</label>
+                        <input type="text" class="form-control" id="productCategory" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Минимальный запас</label>
+                        <input type="number" class="form-control" id="productMinStock" required min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Фильтр по категории - теперь работает на клиенте без перехода на API
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            const selectedCategory = this.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const rowCategory = (row.dataset.category || '').toLowerCase();
+                if (!selectedCategory || rowCategory === selectedCategory) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Поиск продукта
+        document.getElementById('searchProduct').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const productName = row.cells[0].textContent.toLowerCase();
+                const isVisible = row.style.display !== 'none' || !document.getElementById('categoryFilter').value;
+                
+                if (isVisible) {
+                    row.style.display = productName.includes(searchText) ? '' : 'none';
+                }
+            });
+        });
+
+        // Сохранение нового продукта
+        document.getElementById('saveProductBtn').addEventListener('click', async function() {
+            const product = {
+                name: document.getElementById('productName').value,
+                prodTime: parseInt(document.getElementById('productTime').value),
+                category: document.getElementById('productCategory').value,
+                minimalStock: parseInt(document.getElementById('productMinStock').value),
+                description: document.getElementById('productDescription').value
+            };
+
+            if (!product.name || !product.prodTime || !product.category) {
+                alert('Пожалуйста, заполните обязательные поля');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при добавлении продукта');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка при добавлении продукта');
+            }
+        });
+
+        // Просмотр материалов продукта
+        document.querySelectorAll('.view-materials-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                
+                try {
+                    const response = await fetch(`/api/products/${productId}/materials`);
+                    if (response.ok) {
+                        const materials = await response.json();
+                        let message = `Материалы для продукта "${productName}":\n\n`;
+                        materials.forEach(m => {
+                            message += `• ${m.name}: ${m.quantityNeeded} ${m.unitOfMeasure}\n`;
+                        });
+                        alert(message);
+                    } else {
+                        alert('Материалы не найдены для этого продукта');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+}

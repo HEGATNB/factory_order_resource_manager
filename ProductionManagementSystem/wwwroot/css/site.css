@@ -1,0 +1,35 @@
+/* wwwroot/css/site.css */
+.progress {
+    height: 25px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+.status-badge {
+    font-size: 0.9em;
+    padding: 5px 10px;
+}
+
+.low-stock {
+    background-color: #fff3cd !important;
+}
+
+.critical-stock {
+    background-color: #f8d7da !important;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}

@@ -1,0 +1,9 @@
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.csproj.AssemblyReference.cache
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.AssemblyInfoInputs.cache
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.AssemblyInfo.cs
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.RazorAssemblyInfo.cache
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net10.0\ProductionManagementSystem.RazorAssemblyInfo.cs

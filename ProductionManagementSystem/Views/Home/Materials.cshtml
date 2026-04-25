@@ -1,0 +1,214 @@
+@model IEnumerable<ProductionManagementSystem.Models.Material>
+@{
+    ViewData["Title"] = "Панель материалов";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Панель материалов</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+        Добавить материал
+    </button>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Ед. измерения</th>
+                <th>Мин. запас</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var material in Model)
+            {
+                var isLowStock = material.Quantity <= material.MinimalStock;
+                var isCriticalStock = material.Quantity == 0;
+                
+                <tr class="@(isCriticalStock ? "table-danger" : isLowStock ? "table-warning" : "")">
+                    <td>@material.Name</td>
+                    <td>
+                        <span class="fw-bold @(isLowStock ? "text-danger" : "")">
+                            @material.Quantity.ToString("F2")
+                        </span>
+                    </td>
+                    <td>@material.UnitOfMeasure</td>
+                    <td>@material.MinimalStock.ToString("F2")</td>
+                    <td>
+                        @if (isCriticalStock)
+                        {
+                            <span class="badge bg-danger">Закончился</span>
+                        }
+                        else if (isLowStock)
+                        {
+                            <span class="badge bg-warning text-dark">Низкий запас</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">В норме</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-success replenish-btn" 
+                                data-material-id="@material.Id" 
+                                data-material-name="@material.Name">
+                            Пополнить
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно добавления материала -->
+<div class="modal fade" id="addMaterialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить новый материал</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMaterialForm">
+                    <div class="mb-3">
+                        <label class="form-label">Название</label>
+                        <input type="text" class="form-control" id="materialName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Текущее количество</label>
+                        <input type="number" class="form-control" id="materialQuantity" required step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Единица измерения</label>
+                        <select class="form-select" id="materialUnit">
+                            <option value="кг">кг</option>
+                            <option value="шт">шт</option>
+                            <option value="литр">литр</option>
+                            <option value="м">м</option>
+                            <option value="м²">м²</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Минимальный запас</label>
+                        <input type="number" class="form-control" id="materialMinStock" required step="0.01" min="0">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveMaterialBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно пополнения -->
+<div class="modal fade" id="replenishModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Пополнить материал: <span id="replenishMaterialName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="replenishForm">
+                    <input type="hidden" id="replenishMaterialId">
+                    <div class="mb-3">
+                        <label class="form-label">Количество для добавления</label>
+                        <input type="number" class="form-control" id="replenishAmount" required step="0.01" min="0.01">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-success" id="confirmReplenishBtn">Пополнить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Сохранение нового материала
+        document.getElementById('saveMaterialBtn').addEventListener('click', async function() {
+            const material = {
+                name: document.getElementById('materialName').value,
+                quantity: parseFloat(document.getElementById('materialQuantity').value),
+                unitOfMeasure: document.getElementById('materialUnit').value,
+                minimalStock: parseFloat(document.getElementById('materialMinStock').value)
+            };
+
+            if (!material.name || isNaN(material.quantity) || isNaN(material.minimalStock)) {
+                alert('Пожалуйста, заполните все поля корректно');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/materials', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(material)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при добавлении материала');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка при добавлении материала');
+            }
+        });
+
+        // Открытие модального окна пополнения
+        document.querySelectorAll('.replenish-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const materialId = this.dataset.materialId;
+                const materialName = this.dataset.materialName;
+                
+                document.getElementById('replenishMaterialId').value = materialId;
+                document.getElementById('replenishMaterialName').textContent = materialName;
+                document.getElementById('replenishAmount').value = '';
+                
+                new bootstrap.Modal(document.getElementById('replenishModal')).show();
+            });
+        });
+
+        // Подтверждение пополнения
+        document.getElementById('confirmReplenishBtn').addEventListener('click', async function() {
+            const materialId = document.getElementById('replenishMaterialId').value;
+            const amount = parseFloat(document.getElementById('replenishAmount').value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Введите корректное количество');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/materials/${materialId}/stock`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount: amount })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при пополнении материала');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка при пополнении материала');
+            }
+        });
+    </script>
+}
