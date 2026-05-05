@@ -8,6 +8,7 @@
 <div class="alert alert-info">
     <i class="bi bi-info-circle"></i> 
     Прогресс заказов обновляется автоматически. Производство продолжается даже когда вы на другой странице.
+    <br><small class="text-muted">Материалы расходуются постепенно в процессе производства.</small>
 </div>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -216,6 +217,9 @@
                                 <strong><span id="infoEndDate">-</span></strong>
                             </div>
                         </div>
+                        <div class="alert alert-info mt-2">
+                            <small><i class="bi bi-info-circle"></i> Материалы будут расходоваться постепенно в процессе производства</small>
+                        </div>
                     </div>
                     
                     <div id="materialCheck" style="display: none;">
@@ -294,6 +298,7 @@
                     
                     row.setAttribute('data-status', order.status);
                     
+                    // Обновляем прогресс-бар
                     const progressBar = row.querySelector('.progress-bar');
                     if (progressBar) {
                         progressBar.style.width = order.progressPercent + '%';
@@ -311,10 +316,17 @@
                         }
                     }
                     
+                    // Обновляем статус
                     const statusCell = row.querySelector('td:nth-child(4) .badge');
                     if (statusCell) {
                         statusCell.innerHTML = '<i class="bi ' + getStatusIcon(order.status) + '"></i> ' + getStatusText(order.status);
                         statusCell.className = 'badge ' + getStatusBadgeClass(order.status);
+                    }
+                    
+                    // Обновляем информацию о линии
+                    const lineCell = row.querySelector('td:nth-child(6)');
+                    if (lineCell && order.productionLineName) {
+                        lineCell.innerHTML = '<span class="text-muted"><i class="bi bi-gear"></i> ' + order.productionLineName + '</span>';
                     }
                     
                     updateActionButtons(row, order);
@@ -460,6 +472,21 @@
 
         async function startOrder(e) {
             const orderId = e.target.closest('button').dataset.orderId;
+            
+            // Проверяем, есть ли у заказа уже линия
+            try {
+                const checkResponse = await fetch('/api/orders/' + orderId);
+                if (checkResponse.ok) {
+                    const order = await checkResponse.json();
+                    if (order.productionLineId && order.productionLineName) {
+                        alert('Заказ #' + orderId + ' уже назначен на линию "' + order.productionLineName + '"');
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking order:', error);
+            }
+            
             if (!confirm('Запустить заказ в производство?')) return;
             
             try {
@@ -484,7 +511,7 @@
 
         async function pauseOrder(e) {
             const orderId = e.target.closest('button').dataset.orderId;
-            if (!confirm('Поставить заказ на паузу? Производство остановится.')) return;
+            if (!confirm('Поставить заказ на паузу? Производство остановится. Материалы больше не будут расходоваться.')) return;
             
             try {
                 const response = await fetch('/api/orders/' + orderId + '/pause', {
@@ -508,7 +535,7 @@
 
         async function resumeOrder(e) {
             const orderId = e.target.closest('button').dataset.orderId;
-            if (!confirm('Возобновить производство?')) return;
+            if (!confirm('Возобновить производство? Расход материалов продолжится.')) return;
             
             try {
                 const response = await fetch('/api/orders/' + orderId + '/resume', {
@@ -532,7 +559,7 @@
 
         async function cancelOrder(e) {
             const orderId = e.target.closest('button').dataset.orderId;
-            if (!confirm('Вы уверены, что хотите отменить заказ? Это действие нельзя отменить.')) return;
+            if (!confirm('Вы уверены, что хотите отменить заказ? Это действие нельзя отменить.\n\nМатериалы, уже использованные для этого заказа, не будут возвращены.')) return;
             
             try {
                 const response = await fetch('/api/orders/' + orderId + '/cancel', {
@@ -584,12 +611,15 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="alert alert-info">
+                        <small><i class="bi bi-info-circle"></i> Материалы расходуются постепенно по мере выполнения заказа</small>
+                    </div>
                     <h6><i class="bi bi-box-seam"></i> Необходимые материалы:</h6>
                     <table class="table table-sm">
                         <thead>
                             <tr>
                                 <th>Материал</th>
-                                <th>Требуется</th>
+                                <th>Требуется всего</th>
                                 <th>В наличии</th>
                                 <th>Статус</th>
                             </tr>

@@ -7,7 +7,9 @@ namespace ProductionManagementSystem.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<ProductionSimulatorService> _logger;
-        private readonly Dictionary<int, Timer> _productionTimers = new Dictionary<int, Timer>();
+
+        // Храним информацию о расходе материалов для каждого заказа
+        private readonly Dictionary<int, OrderConsumption> _orderConsumptions = new();
 
         public ProductionSimulatorService(
             IServiceProvider serviceProvider,
@@ -17,11 +19,25 @@ namespace ProductionManagementSystem.Services
             _logger = logger;
         }
 
+        private class OrderConsumption
+        {
+            public int OrderId { get; set; }
+            public DateTime StartTime { get; set; }
+            public Dictionary<int, MaterialConsumption> Materials { get; set; } = new();
+        }
+
+        private class MaterialConsumption
+        {
+            public int MaterialId { get; set; }
+            public decimal TotalNeeded { get; set; }
+            public decimal ConsumedSoFar { get; set; }
+            public decimal LastConsumedAt { get; set; } // при каком прогрессе было последнее списание
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Production Simulator Service started.");
 
-            // Запускаем мониторинг активных заказов каждые 2 секунды
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -43,7 +59,6 @@ namespace ProductionManagementSystem.Services
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                // Получаем все активные заказы (в работе, не на паузе)
                 var activeOrders = await context.WorkOrders
                     .Include(w => w.Product)
                     .Include(w => w.ProductionLine)
@@ -66,53 +81,98 @@ namespace ProductionManagementSystem.Services
 
         private async Task UpdateOrderProgress(ApplicationDbContext context, WorkOrder order)
         {
-            // Проверяем, что линия активна и заказ всё ещё на ней
             if (order.ProductionLine == null || order.ProductionLine.Status != "Active")
                 return;
 
-            // Получаем коэффициент эффективности линии
-            float efficiencyFactor = order.ProductionLine.EfficiencyFactor;
-
-            // Вычисляем прирост прогресса
-            // Базовый прирост: 1% за 10 секунд при эффективности 1.0
-            int baseIncrementPerMinute = 6; // 6% в минуту при эффективности 1.0
-            float adjustedIncrement = baseIncrementPerMinute * efficiencyFactor * (2.0f / 60.0f); // За 2 секунды
-
-            // Если время производства маленькое, увеличиваем скорость
-            if (order.Product != null && order.Product.ProductionTimePerUnit < 30)
+            // Инициализируем данные о расходе, если нужно
+            if (!_orderConsumptions.ContainsKey(order.Id))
             {
-                adjustedIncrement *= 1.5f;
+                await InitializeConsumption(context, order);
             }
 
-            int newProgress = Math.Min(100, order.ProgressPercent + (int)Math.Ceiling(adjustedIncrement));
+            float efficiencyFactor = order.ProductionLine.EfficiencyFactor;
 
-            // Если прогресс не изменился, пропускаем обновление
-            if (newProgress == order.ProgressPercent)
+            // Время производства одной единицы в секундах
+            float productionTimePerUnitSeconds = order.Product.ProductionTimePerUnit * 60f;
+
+            // Общее время производства всего заказа в секундах
+            float totalProductionTimeSeconds = productionTimePerUnitSeconds * order.Quantity;
+
+            // Прирост прогресса за 2 секунды
+            float progressIncrement = (2.0f / totalProductionTimeSeconds) * 100f * efficiencyFactor;
+
+            if (progressIncrement < 0.05f)
+                progressIncrement = 0.05f;
+
+            int oldProgress = order.ProgressPercent;
+            float newProgressFloat = oldProgress + progressIncrement;
+            int newProgress = Math.Min(100, (int)Math.Floor(newProgressFloat));
+
+            if (newProgress == oldProgress)
                 return;
+
+            // Списываем материалы за прошедший интервал
+            await ConsumeMaterialsForProgress(context, order, oldProgress, newProgress);
 
             order.ProgressPercent = newProgress;
 
             if (order.ProgressPercent >= 100)
             {
                 order.Status = "Completed";
-                
-                // Списываем материалы
-                await ConsumeMaterials(context, order);
-                
+
+                // НЕ списываем материалы - они уже все списаны!
+                // Просто логируем завершение
+                _logger.LogInformation($"Order {order.Id} completed at 100%. Materials already consumed during production.");
+
                 // Освобождаем линию
                 if (order.ProductionLine != null)
                 {
                     order.ProductionLine.CurrentWorkOrderId = null;
                 }
 
-                _logger.LogInformation($"Order {order.Id} completed. Progress: 100%");
+                // Очищаем данные о расходе
+                _orderConsumptions.Remove(order.Id);
             }
 
             await context.SaveChangesAsync();
         }
 
-        private async Task ConsumeMaterials(ApplicationDbContext context, WorkOrder order)
+        private async Task InitializeConsumption(ApplicationDbContext context, WorkOrder order)
         {
+            var productMaterials = await context.ProductMaterials
+                .Include(pm => pm.Material)
+                .Where(pm => pm.ProductId == order.ProductId)
+                .ToListAsync();
+
+            var consumption = new OrderConsumption
+            {
+                OrderId = order.Id,
+                StartTime = DateTime.Now
+            };
+
+            foreach (var pm in productMaterials)
+            {
+                if (pm.Material != null)
+                {
+                    consumption.Materials[pm.MaterialId] = new MaterialConsumption
+                    {
+                        MaterialId = pm.MaterialId,
+                        TotalNeeded = pm.QuantityNeeded * order.Quantity,
+                        ConsumedSoFar = 0,
+                        LastConsumedAt = 0
+                    };
+                }
+            }
+
+            _orderConsumptions[order.Id] = consumption;
+        }
+
+        private async Task ConsumeMaterialsForProgress(ApplicationDbContext context, WorkOrder order, int oldProgress, int newProgress)
+        {
+            if (!_orderConsumptions.ContainsKey(order.Id))
+                return;
+
+            var consumption = _orderConsumptions[order.Id];
             var productMaterials = await context.ProductMaterials
                 .Include(pm => pm.Material)
                 .Where(pm => pm.ProductId == order.ProductId)
@@ -120,14 +180,47 @@ namespace ProductionManagementSystem.Services
 
             foreach (var pm in productMaterials)
             {
-                if (pm.Material != null)
+                if (pm.Material == null || !consumption.Materials.ContainsKey(pm.MaterialId))
+                    continue;
+
+                var materialConsumption = consumption.Materials[pm.MaterialId];
+
+                // Сколько всего должно быть использовано при новом прогрессе
+                decimal shouldBeConsumedTotal = (decimal)newProgress / 100m * materialConsumption.TotalNeeded;
+
+                // Сколько должно быть использовано сейчас (округляем вверх для штук)
+                decimal shouldBeConsumedNow;
+
+                if (pm.Material.UnitOfMeasure == "шт")
                 {
-                    var totalNeeded = pm.QuantityNeeded * order.Quantity;
-                    pm.Material.Quantity = Math.Max(0, pm.Material.Quantity - totalNeeded);
-                    
-                    _logger.LogInformation(
-                        $"Consumed {totalNeeded} {pm.Material.UnitOfMeasure} of {pm.Material.Name} " +
-                        $"for order {order.Id}. Remaining: {pm.Material.Quantity}");
+                    // Для штук: округляем вверх (5.1 -> 6)
+                    shouldBeConsumedNow = Math.Ceiling(shouldBeConsumedTotal);
+                }
+                else
+                {
+                    // Для кг, литров, метров: округляем до целых вверх (как просили)
+                    shouldBeConsumedNow = Math.Ceiling(shouldBeConsumedTotal);
+                }
+
+                // Сколько еще нужно списать
+                decimal needToConsume = shouldBeConsumedNow - materialConsumption.ConsumedSoFar;
+
+                if (needToConsume > 0)
+                {
+                    // Списываем столько, сколько нужно, но не больше доступного
+                    decimal actualConsume = Math.Min(needToConsume, pm.Material.Quantity);
+
+                    if (actualConsume > 0)
+                    {
+                        pm.Material.Quantity -= actualConsume;
+                        materialConsumption.ConsumedSoFar += actualConsume;
+
+                        _logger.LogInformation(
+                            $"Order #{order.Id} [{oldProgress}%->{newProgress}%]: " +
+                            $"Consumed {actualConsume} {pm.Material.UnitOfMeasure} of {pm.Material.Name} " +
+                            $"(total: {materialConsumption.ConsumedSoFar}/{materialConsumption.TotalNeeded}, " +
+                            $"remaining stock: {pm.Material.Quantity})");
+                    }
                 }
             }
         }
@@ -135,6 +228,7 @@ namespace ProductionManagementSystem.Services
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Production Simulator Service stopping.");
+            _orderConsumptions.Clear();
             await base.StopAsync(cancellationToken);
         }
     }

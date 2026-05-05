@@ -61,6 +61,7 @@ C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.RazorAssemblyInfo.cache
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.RazorAssemblyInfo.cs
+C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.sourcelink.json
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\rjimswa.dswa.cache.json
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\rjsmrazor.dswa.cache.json
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\rjsmcshtml.dswa.cache.json
@@ -78,4 +79,3 @@ C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.pdb
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.genruntimeconfig.cache
 C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ref\ProductionManagementSystem.dll
-C:\Users\DELL\Desktop\projects\PKS_PROJ4_2\ProductionManagementSystem\obj\Debug\net6.0\ProductionManagementSystem.sourcelink.json

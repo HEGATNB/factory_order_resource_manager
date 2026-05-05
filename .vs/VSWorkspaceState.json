@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\ProductionManagementSystem",
+    "\\ProductionManagementSystem\\Controllers",
+    "\\ProductionManagementSystem\\Services",
+    "\\ProductionManagementSystem\\Views",
+    "\\ProductionManagementSystem\\Views\\Home"
+  ],
+  "SelectedNode": "\\ProductionManagementSystem\\Views\\Home\\Orders.cshtml",
+  "PreviewInSolutionExplorer": false
+}

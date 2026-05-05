@@ -3425,11 +3425,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4\\TouristGuide\\TouristGuide.csproj",
+      "projectUniqueName": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4_2\\TouristGuide\\TouristGuide.csproj",
       "projectName": "TouristGuide",
-      "projectPath": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4\\TouristGuide\\TouristGuide.csproj",
+      "projectPath": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4_2\\TouristGuide\\TouristGuide.csproj",
       "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4\\TouristGuide\\obj\\",
+      "outputPath": "C:\\Users\\DELL\\Desktop\\projects\\PKS_PROJ4_2\\TouristGuide\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
